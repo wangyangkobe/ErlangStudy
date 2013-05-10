@@ -1,6 +1,15 @@
+%%%-------------------------------------------------------------------
+%%% @author Yang Wang 
+%%% @copyright (C) 2013, Yang Wang
+%%% @doc
+%%%
+%%% @end
+%%% Created : 10 May 2013 by Yang Wang
+%%% Purposed: 统计文件中每个单词出现的行数以及次数。
+%%%-------------------------------------------------------------------
 -module(text_index).
-
 -compile(export_all).
+
 -import(re, [run/2,replace/4]).
 
 -record(data, {word, line = []}).
