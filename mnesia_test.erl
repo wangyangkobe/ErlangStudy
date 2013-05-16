@@ -103,7 +103,11 @@ handle_call({add, Name, Sex, Age, Address}, _From, State) ->
     mnesia:transaction(Fun),
     {reply, ok, State};
 handle_call({delete, Name}, _From, State)->
-    mnesia:transaction(fun() -> mnesia:delete({person, Name}) end),
+    Persons = mnesia:dirty_match_object(#person{name = Name, _ = '_'}),
+    Fun = fun(X) ->
+                  mnesia:transaction(fun() -> mnesia:delete_object(X) end)
+          end,
+    lists:foreach(Fun, Persons),
     {reply, ok, State};
 handle_call(_Request, _From, State) ->
     Reply = ok,
