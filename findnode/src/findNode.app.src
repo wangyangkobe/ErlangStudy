@@ -1,0 +1,13 @@
+{application, findNode,
+ [
+  {description, "Erlang node finder application."},
+  {vsn, "1"},
+  {registered, [findNodeServer]},
+  {modules,[findNode_app, findNode_sup, findNodeServer]},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { findNode_app, []}},
+  {env, [{multicast_addr, {226,0,0,1}}, {multicast_port, 6969}, {multicast_ttl, 10}]}
+ ]}.
