@@ -3,7 +3,7 @@
   {description, "Erlang node finder application."},
   {vsn, "1"},
   {registered, [findNodeServer]},
-  {modules,[findNode_app, findNode_sup, findNodeServer]},
+  {modules,[findNode_app, findNode_sup, findNodeServer, findNodeClient]},
   {applications, [
                   kernel,
                   stdlib

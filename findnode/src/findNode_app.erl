@@ -13,6 +13,7 @@
 %% Application callbacks
 -export([start/2, stop/1]).
 
+-include("common.hrl").
 %%%===================================================================
 %%% Application callbacks
 %%%===================================================================
@@ -34,14 +35,18 @@
 %% @end
 %%--------------------------------------------------------------------
 start(_StartType, _StartArgs) ->
-    crypto:start(),
+
+    table_init(),
 
     {ok, MultiCastAddr} = application:get_env(findNode, multicast_addr),
     {ok, MultiCastPort} = application:get_env(findNode, multicast_port),
     {ok, MultiCastTtl}  = application:get_env(findNode, multicast_ttl),
-    io:format("MultiCastAddr:~p~nMultiCastPort:~p~nMultiCastTtl:~p~n",
-	     [MultiCastAddr, MultiCastPort, MultiCastTtl]),
+
+    error_logger:info_msg("MultiCastAddr:~p~nMultiCastPort:~p~nMultiCastTtl:~p~n",
+			  [MultiCastAddr, MultiCastPort, MultiCastTtl]),
+
     Parameter = {MultiCastAddr, MultiCastPort, MultiCastTtl},
+
     case findNode_sup:start_link(Parameter) of
 	{ok, Pid} ->
 	    {ok, Pid};
@@ -65,3 +70,8 @@ stop(_State) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+table_init() ->
+    mnesia:create_schema([node()]),
+    mnesia:start(),
+    mnesia:create_table(person, [{attributes, record_info(fields, person)},
+				 {disc_copies, [node()]}]).

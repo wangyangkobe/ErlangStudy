@@ -117,10 +117,14 @@ handle_cast(_Msg, State) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_info({udp, Socket, _Address, _Port, Data}, 
+handle_info({udp, Socket, Address, Port, Data}, 
 	    State = #state{recvSocket = Socket}) ->
-    io:format("Receive data:~p~n", [Data]),
+    error_logger:info_msg("Receive data:~p form ~p:~p.~n", 
+			  [Data, Address, Port]),
+    NewNode     = list_to_atom(Data),
+    OldNodeList = nodes(),
     net_adm:ping(list_to_atom(Data)),
+    copy_table_to_new_node(OldNodeList, NewNode),
     {noreply, State};
 handle_info(_Info, State) ->
     {noreply, State}.
@@ -159,3 +163,14 @@ open_send_socket(Ttl) ->
 	     { multicast_loop, true } ],
     {ok, SendSocket} = gen_udp:open(0, Opts),
     SendSocket.
+
+copy_table_to_new_node(NodeList, NewNode)->
+    case lists:member(NewNode, NodeList) of
+	true -> ok; % no need to copy tables
+	false -> 
+	    mnesia:change_config(extra_db_nodes, [NewNode]),
+	    rpc:call(NewNode, mnesia, change_table_copy_type, 
+		     [schema, NewNode, disc_copies]),
+	    rpc:call(NewNode, mnesia, add_table_copy,
+		    [person, NewNode, disc_copies])
+    end.
