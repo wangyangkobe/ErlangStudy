@@ -60,8 +60,9 @@ init([{Address, Port, Ttl}]) ->
 	     { multicast_loop, true },
 	     { reuseaddr, true },
 	     list ],
-
+    %% open the multicast receive socket
     {ok, RecvSocket} = gen_udp:open(Port, Opts),
+
     SendSocket = open_send_socket(Ttl),
 
     State = #state{sendSocket = SendSocket,
@@ -157,6 +158,10 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+%%--------------------------------------------------------------------
+%% Open the send socket. Every client should call this function.
+%%--------------------------------------------------------------------
 open_send_socket(Ttl) ->
     Opts = [ { ip,             { 0, 0, 0, 0 } },
 	     { multicast_ttl,  Ttl }, 

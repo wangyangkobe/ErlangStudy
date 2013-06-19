@@ -25,6 +25,7 @@ broadcast() ->
 	      { reuseaddr, true },
 	      list ],
 
+    %% Add localhost address to the multicast group.
     {ok, _RecvSocket} = gen_udp:open(Port, Opts1),
 
     Opts2 = [ { ip,             { 0, 0, 0, 0 } },
@@ -32,5 +33,6 @@ broadcast() ->
 	      { multicast_loop, true } ],
     {ok, SendSocket} = gen_udp:open(0, Opts2),
     
+    %% send local node to the findNode server.
     ok = gen_udp:send(SendSocket, Address, Port, atom_to_list(node())).
 
