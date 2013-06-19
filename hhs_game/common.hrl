@@ -1,3 +1,0 @@
--record(userInfo, {name, password}).
--record(roomInfo, {id, title, state, players}).
--define(PORT, 4567).
