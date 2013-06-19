@@ -1,0 +1,13 @@
+{application, hhs_game,
+ [
+  {description, "The HHS game server."},
+  {vsn, "1"},
+  {modules, [hhs_game_app, hhs_game_sup, hall, room, connect_listen]},
+  {registered, [hall, room]},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { hhs_game_app, []}},
+  {env, []}
+ ]}.
