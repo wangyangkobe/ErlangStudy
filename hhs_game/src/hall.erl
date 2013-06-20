@@ -19,7 +19,14 @@
 
 -define(SERVER, ?MODULE). 
 
--record(state, {id, name, pid, port, roomPlayers = []}).
+-record(state,
+	{id,               % user ID, increased one by one
+	 name,             % user name
+	 pid,              % the process ID of the player
+	 port,             % the socket of the player
+	 roomPlayers = []
+	}).
+
 -include("common.hrl").
 %%%===================================================================
 %%% API

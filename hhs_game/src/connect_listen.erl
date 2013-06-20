@@ -16,6 +16,7 @@ loop(Listen) ->
     loop(Listen).
 
 
+%% This function used to handle multi user connection.
 handle_conn(Socket) ->
     receive
         {tcp, Socket, Data} ->
@@ -57,17 +58,5 @@ handle_conn(Socket) ->
 decode_data(Bin) ->
     L = binary_to_term(Bin),
     string:tokens(L, "@").
-
-
-login(Data) ->
-    {ok, Socket} = gen_tcp:connect("localhost", 4567, [binary, {packet, 0}]),
-    ok = gen_tcp:send(Socket, term_to_binary(Data)),
-
-    receive
-        {tcp, Socket, Bin} ->
-            io:format("Client received: ~p~n", [binary_to_term(Bin)]),
-            gen_tcp:close(Socket)
-    end.
-
 
 
