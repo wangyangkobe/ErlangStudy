@@ -3,3 +3,9 @@
 # ºöÂÔµôÉú³ÉµÄbeam
 *.beam
 *.erl~
+*.src~
+*.LOG
+*.DCD
+*.DAT
+*.dump
+
