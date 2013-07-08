@@ -172,6 +172,20 @@ handle_call(_Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_cast({server_alive, ServerName}, State) ->
+    NewState = lists:keyreplace(ServerName, #serverState.serverName, 
+				State, #serverState{serverName = ServerName}),
+    lists:foreach(fun(#serverState{serverName = Name}) 
+		     -> gen_server:cast(Name, {server_alive, ServerName}) end, 
+		  NewState),
+    {noreply, NewState};
+handle_cast({increace_used_counter, ServerName, Value}, State) ->
+    {value, #serverState{used = Used, free = Free} = Old} 
+	= lists:keysearch(ServerName, #serverState.serverName, State),
+    NewState = lists:keyreplace(ServerName, #serverState.serverName, State,
+				Old#serverState{used =  Used + Value, 
+						free = Free - Value}),
+    {noreply, NewState};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
