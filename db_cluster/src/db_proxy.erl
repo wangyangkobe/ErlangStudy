@@ -110,6 +110,7 @@ handle_call({rm_db_server, ServerName}, _From, State) ->
 	false ->
 	    {reply, {error, "The db server is not existed!"}, State};
 	_ ->
+	    supervisor:terminate_child(?DB_CLUSER_SUP, ServerName),
 	    supervisor:delete_child(?DB_CLUSER_SUP, ServerName),
 	    {reply, ok, lists:keydelete(ServerName, #serverState.serverName, State)}
     end;
