@@ -29,6 +29,7 @@
 %%%===================================================================
 add_db_server(ServerName) when is_atom(ServerName)->
     gen_server:call(?MODULE, {add_db_server, ServerName});
+
 add_db_server(ServerName) when is_list(ServerName)->
     gen_server:call(?MODULE, {add_db_server, list_to_atom(ServerName)}).
 
@@ -122,10 +123,11 @@ handle_call({insert, Key, Value}, _From, State) ->
 	[#serverState{free = Free, used = Used}] -> % just one db server
 	    gen_server:cast(State#serverState.serverName, {insert, Key, Value}),
 	    {reply, ok, State#serverState{free = Free - 1, used = Used + 1}};
-	_ -> %more than one db server, need to backup
+	_ -> % more than one db server, need to backup
 	    S = handle_insert({Key, Value}, State),
 	    {reply, ok, S}
     end;
+
 handle_call({update, Key, Value}, _From, State) ->
     case handle_search(Key, State) of
 	undefined -> 
@@ -147,6 +149,7 @@ handle_call({delete, Key}, _From, State) ->
 	    {reply, {error, "This data is not existed!"}, State};
 	{_Value, ServerName} ->
 	    gen_server:call(ServerName, {delete, Key}),
+
 	    {value, #serverState{used = Used, free = Free} = Old} 
 		= lists:keysearch(ServerName, #serverState.serverName, State),
 
@@ -180,6 +183,7 @@ handle_cast({server_alive, ServerName}, State) ->
 		     -> gen_server:cast(Name, {server_alive, ServerName}) end, 
 		  NewState),
     {noreply, NewState};
+
 handle_cast({increace_used_counter, ServerName, Value}, State) ->
     {value, #serverState{used = Used, free = Free} = Old} 
 	= lists:keysearch(ServerName, #serverState.serverName, State),
@@ -187,6 +191,7 @@ handle_cast({increace_used_counter, ServerName, Value}, State) ->
 				Old#serverState{used =  Used + Value, 
 						free = Free - Value}),
     {noreply, NewState};
+
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
@@ -235,7 +240,7 @@ start_db_server(ServerName) ->
     supervisor:start_child(?DB_CLUSER_SUP,
 			   {ServerName, {db_server, start_link, [ServerName]},
 			    permanent, 5000, worker, [db_server]}).
-
+%% get the state of db servers.
 get_server_state(StateList) ->
     get_server_state(StateList, []).
 get_server_state([], Res) ->
@@ -269,7 +274,7 @@ handle_search(Key, State) ->
 	    end
     end.
 
-	    
+%% when delete one data, we need to delete the backup data.	    
 decrese_backup_counter(State) ->
     receive
 	{decrease_backup, ServerName} ->

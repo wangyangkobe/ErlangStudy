@@ -33,4 +33,6 @@ test()->
     L2 = [$a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, 
 	  $m, $n, $o, $p, $q, $r, $s, $t],
 
-    lists:foreach(fun({K, V}) -> insert(K, V) end, lists:zip(L1, L2)).
+    lists:foreach(fun({K, V}) -> insert(K, V) end, lists:zip(L1, L2)),
+    
+    ls_db_server().

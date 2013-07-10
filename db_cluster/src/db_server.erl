@@ -77,6 +77,7 @@ handle_call({update, Key, Value}, _From, TableId) ->
 	    ets:insert(TableId, {{Key, TableName}, Value}),
 	    {reply, ok, TableId}
     end;
+
 handle_call({search, Key}, _From, TableId) ->
     TableName = ets:info(TableId, name),
      case ets:lookup(TableId, {Key, TableName}) of
@@ -85,10 +86,12 @@ handle_call({search, Key}, _From, TableId) ->
 	[{_, Value}] ->  
 	    {reply, {Value, TableName}, TableId}
     end;
+
 handle_call({delete, Key}, _From, TableId) ->
     TableName = ets:info(TableId, name),
     ets:delete(TableId, {Key, TableName}),
     {reply, ok, TableId};
+
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
@@ -125,6 +128,7 @@ handle_cast({delete_backup, ServerName, Key}, TableId) ->
 	    db_proxy ! {decrease_backup, ets:info(TableId, name)},
 	    {noreply, TableId}
     end;
+
 handle_cast({server_alive, ServerName}, TableId) ->
     ResList = ets:match_object(TableId, {{'_', ServerName}, '_'}),
     lists:foreach(fun({{Key, _}, Value}) ->
@@ -132,6 +136,7 @@ handle_cast({server_alive, ServerName}, TableId) ->
 		  end, ResList),
     gen_server:cast(db_proxy, {increace_used_counter, ServerName, length(ResList)}),
     {noreply, TableId};
+
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
