@@ -5,5 +5,5 @@
               {applications,[kernel,stdlib]},
               {mod,{db_cluser_app,[]}},
               {env,[]},
-              {modules,[client,db_cluser_app,db_cluser_sup,db_proxy,
-                        db_server]}]}.
+              {modules,[client,db_cluser,db_cluser_app,db_cluser_sup,db_proxy,
+                        db_server,httpclient]}]}.
