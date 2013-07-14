@@ -41,16 +41,14 @@ stop() ->
     inets:stop().
 
 do(#mod{request_uri = Request_Uri} = _ModData) ->
-    io:format("do~p~n", [Request_Uri]),
-    io:format("~p~n", [httpd_util:split_path(Request_Uri)]),
+    %io:format("do~p~n", [Request_Uri]),
+    %io:format("~p~n", [httpd_util:split_path(Request_Uri)]),
     {PathInfo, QueryString} = httpd_util:split_path(Request_Uri),
     case QueryString of
 	[] ->
 	    decode_path_info(PathInfo);
 	_ ->
 	    Body = case decode_request_parameter(QueryString) of
-		       ["", _, _] ->
-			   "<html><body>Hello world</body></html>";
 		       [add_db_server, ServerName, _] ->
 			   Res = client:add_db_server(ServerName),
 			   format_response(Res);
@@ -132,6 +130,7 @@ decode_path_info("/httpclient/rm") ->
 
 index_page_body() ->
     "<html><body><h1>Web DataBase Cluser</h1>
+	<h2>We have these services:</h2>	
 	<a href=\"http://127.0.0.1:8080/httpclient/add\">add_db_server</a><br>
         <a href=\"http://127.0.0.1:8080/httpclient/rm\">rm_db_server</a><br>
         <a href=\"http://127.0.0.1:8080/httpclient?fun=ls_db_server\">ls_db_server</a><br>
