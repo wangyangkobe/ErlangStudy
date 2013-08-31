@@ -6,7 +6,8 @@
 -export([test/1, test/2]).
 %% Supervisor callbacks
 -export([init/1]).
-
+-export([handle_call/3]).
+-export([terminate/2]).
 -record(state, {}).
 
 %% ===================================================================
@@ -56,6 +57,12 @@ init([Method]) ->
     io:format("~p, call gen_server:init~n", [Method]),
     {ok, #state{}}.
 
+
+handle_call(stop, {_From, _Tag}, S) ->
+    {stop, normal, ok, S}.
+
+terminate(_Msg, _State) ->
+    ok.
 
 %%%===================================================================
 %%% Internal functions
